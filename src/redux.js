@@ -46,27 +46,26 @@ const changed = (oldState, newState) => {
   }
   return changed
 }
-export const connect = (selector) => (Component) => {
+export const connect = (selector, dispatchSelector) => (Component) => {
   return (props) => {
     const {state, setState} = useContext(appContext)
-    // 这个 update 只能实现一个组件的 render
+    const dispatch = (action) => {
+      setState(reducer(state, action))
+    }
     const [, update] = useState({})
     const data = selector ? selector(state) : {state}
+    const dispatchers = dispatchSelector ? dispatchSelector(dispatch) : {dispatch}
     useEffect(() => {
       // 注意这里最好取消订阅，否则在 selector 变化时会出现重复订阅
       return store.subscribe(() => {
         const newData = selector ? selector(store.state) : {state: store.state}
         if (changed(data, newData)) {
-          console.log(1)
           update({})
         }
       })
     }, [selector])
 
-    const dispatch = (action) => {
-      setState(reducer(state, action))
-      // update({})
-    }
-    return <Component dispatch={dispatch} {...data} {...props}/>
+
+    return <Component {...dispatchers} {...data} {...props}/>
   }
 }

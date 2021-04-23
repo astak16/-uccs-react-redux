@@ -36,11 +36,15 @@ const User = connect(state => {
   return <div>User: {user.name}</div>
 })
 
-const UserModifier = connect()((props) => {
+const UserModifier = connect(null, (dispatch) => {
+  return {
+    updateUser: (attrs) => dispatch({type: "updateUser", payload: attrs})
+  }
+})((props) => {
   console.log("UserModifier执行了")
-  const {dispatch, state} = props
+  const {updateUser, state} = props
   const onChange = (e) => {
-    dispatch({type: "updateUser", payload: {name: e.target.value}})
+    updateUser({name: e.target.value})
   }
   return <div>
     <input type="text" value={state.user.name} onChange={onChange}/>
