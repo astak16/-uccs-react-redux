@@ -18,7 +18,7 @@ const App = () => {
 }
 
 const A = () => <section>大儿子<User/></section>
-const B = () => <section>二儿子<UserModifier/></section>
+const B = () => <section>二儿子<Wrapper/></section>
 const C = () => <section>幺儿子</section>
 
 const User = () => {
@@ -41,13 +41,23 @@ const reducer = (state, {type, payload}) => {
   }
 }
 
-const UserModifier = () => {
+
+const Wrapper = () => {
   const {appState, setAppState} = useContext(appContext)
+  const dispatch = (action) => {
+    setAppState(reducer(appState, action))
+  }
+  return <UserModifier dispatch={dispatch} state={appState}/>
+}
+
+// react-redux
+const UserModifier = (props) => {
+  const {dispatch,state} = props
   const onChange = (e) => {
-    setAppState(reducer(appState, {type: "updateUser", payload: {name: e.target.value}}))
+    dispatch({type: "updateUser", payload: {name: e.target.value}})
   }
   return <div>
-    <input type="text" value={appState.user.name} onChange={onChange}/>
+    <input type="text" value={state.user.name} onChange={onChange}/>
   </div>
 }
 
