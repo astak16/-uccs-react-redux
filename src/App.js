@@ -21,10 +21,12 @@ const B = () => {
   console.log("B执行了")
   return <section>二儿子<UserModifier/></section>
 }
-const C = () => {
+const C = connect(state => {
+  return {group: state.group}
+})(({group}) => {
   console.log("C执行了")
-  return <section>幺儿子</section>
-}
+  return <section>幺儿子 <div>Group: {group.name}</div></section>
+})
 
 
 const User = connect(state => {

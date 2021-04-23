@@ -5,7 +5,8 @@ export const appContext = React.createContext(null);
 
 export const store = {
   state: {
-    user: {name: "frank", age: 18}
+    user: {name: "frank", age: 18},
+    group: {name: "前端组"}
   },
   setState(newState) {
     store.state = newState
@@ -35,6 +36,16 @@ const reducer = (state, {type, payload}) => {
     return state
   }
 }
+
+const changed = (oldState, newState) => {
+  let changed = false;
+  for (let key in oldState) {
+    if (oldState[key] !== newState[key]) {
+      changed = true
+    }
+  }
+  return changed
+}
 export const connect = (selector) => (Component) => {
   return (props) => {
     const {state, setState} = useContext(appContext)
@@ -42,10 +53,15 @@ export const connect = (selector) => (Component) => {
     const [, update] = useState({})
     const data = selector ? selector(state) : {state}
     useEffect(() => {
-      store.subscribe(() => {
-        update()
+      // 注意这里最好取消订阅，否则在 selector 变化时会出现重复订阅
+      return store.subscribe(() => {
+        const newData = selector ? selector(store.state) : {state: store.state}
+        if (changed(data, newData)) {
+          console.log(1)
+          update({})
+        }
       })
-    }, [])
+    }, [selector])
 
     const dispatch = (action) => {
       setState(reducer(state, action))
