@@ -25,11 +25,26 @@ const User = () => {
   const contextValue = useContext(appContext)
   return <div>User: {contextValue.appState.user.name}</div>
 }
+
+// reducer 是规范 state 创建流程的函数
+const reducer = (state, {type, payload}) => {
+  if (type === "updateUser") {
+    return {
+      ...state,
+      user: {
+        ...state.user,
+        ...payload
+      }
+    }
+  } else {
+    return state
+  }
+}
+
 const UserModifier = () => {
   const {appState, setAppState} = useContext(appContext)
   const onChange = (e) => {
-    appState.user.name = e.target.value
-    setAppState({...appState})
+    setAppState(reducer(appState, {type: "updateUser", payload: {name: e.target.value}}))
   }
   return <div>
     <input type="text" value={appState.user.name} onChange={onChange}/>
