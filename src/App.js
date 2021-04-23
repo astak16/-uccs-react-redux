@@ -1,15 +1,34 @@
 import React from "react";
 import './App.css';
-import {appContext, connect, store} from "./redux";
+import {connect, createStore, Provider} from "./redux";
 
+const reducer = (state, {type, payload}) => {
+  console.log(payload)
+  if (type === "updateUser") {
+    return {
+      ...state,
+      user: {
+        ...state.user,
+        ...payload
+      }
+    }
+  } else {
+    return state
+  }
+}
+const initState = {
+  user: {name: "frank", age: 18},
+  group: {name: "前端组"}
+}
+const store = createStore(reducer, initState)
 
 const App = () => {
   return (
-    <appContext.Provider value={store}>
+    <Provider store={store}>
       <A/>
       <B/>
       <C/>
-    </appContext.Provider>
+    </Provider>
   )
 }
 
