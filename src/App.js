@@ -64,14 +64,33 @@ const User = connectToUser(({user}) => {
   return <div>User: {user.name}</div>
 })
 
-const UserModifier = connectToUser((props) => {
+const ajax = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({data: {name: "3s后的frank", age: 18}})
+    }, 3000)
+  })
+}
+
+const featureUser = (dispatch)=>{
+  ajax("/user").then(res => {
+    dispatch({type: "updateUser", payload: res.data})
+  })
+}
+
+const UserModifier = connect(userSelector,null)((props) => {
   console.log("UserModifier执行了")
-  const {updateUser, user} = props
+  const {updateUser, user, dispatch} = props
   const onChange = (e) => {
     updateUser({name: e.target.value})
   }
+
+  const onClick = (e) => {
+    dispatch(featureUser)
+  }
   return <div>
     <input type="text" value={user.name} onChange={onChange}/>
+    <button onClick={onClick}>异步获取 user</button>
   </div>
 });
 

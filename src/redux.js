@@ -26,7 +26,18 @@ const store = {
   }
 }
 
-const dispatch = store.dispatch
+let dispatch = store.dispatch
+
+const prevDispatch = dispatch
+
+dispatch = (action) => {
+  if (action instanceof Function) {
+    action(dispatch)
+  } else {
+    prevDispatch(action)
+  }
+}
+
 
 export const createStore = (_reducer, initState) => {
   state = initState
@@ -50,6 +61,7 @@ export const connect = (selector, dispatchSelector) => (Component) => {
     const [, update] = useState({})
     const data = selector ? selector(state) : {state}
     const dispatchers = dispatchSelector ? dispatchSelector(dispatch) : {dispatch}
+
     useEffect(() => {
       // 注意这里最好取消订阅，否则在 selector 变化时会出现重复订阅
       return store.subscribe(() => {
