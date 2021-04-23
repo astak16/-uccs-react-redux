@@ -72,13 +72,13 @@ const ajax = () => {
   })
 }
 
-const featureUser = (dispatch)=>{
+const featureUser = (dispatch) => {
   ajax("/user").then(res => {
     dispatch({type: "updateUser", payload: res.data})
   })
 }
 
-const UserModifier = connect(userSelector,null)((props) => {
+const UserModifier = connect(userSelector, null)((props) => {
   console.log("UserModifier执行了")
   const {updateUser, user, dispatch} = props
   const onChange = (e) => {
@@ -86,7 +86,8 @@ const UserModifier = connect(userSelector,null)((props) => {
   }
 
   const onClick = (e) => {
-    dispatch(featureUser)
+    // dispatch(featureUser)
+    dispatch({type: "updateUser", payload: ajax("/user").then(res => res.data)})
   }
   return <div>
     <input type="text" value={user.name} onChange={onChange}/>
