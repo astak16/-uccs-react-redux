@@ -28,26 +28,31 @@ const C = connect(state => {
   return <section>幺儿子 <div>Group: {group.name}</div></section>
 })
 
-
-const User = connect(state => {
+const userSelector = state => {
   return {user: state.user}
-})(({user}) => {
+}
+
+const userDispatcher = (dispatch) => {
+  return {
+    updateUser: (attrs) => dispatch({type: "updateUser", payload: attrs})
+  }
+}
+
+const connectToUser = connect(userSelector, userDispatcher)
+
+const User = connectToUser(({user}) => {
   console.log("User执行了")
   return <div>User: {user.name}</div>
 })
 
-const UserModifier = connect(null, (dispatch) => {
-  return {
-    updateUser: (attrs) => dispatch({type: "updateUser", payload: attrs})
-  }
-})((props) => {
+const UserModifier = connectToUser((props) => {
   console.log("UserModifier执行了")
-  const {updateUser, state} = props
+  const {updateUser, user} = props
   const onChange = (e) => {
     updateUser({name: e.target.value})
   }
   return <div>
-    <input type="text" value={state.user.name} onChange={onChange}/>
+    <input type="text" value={user.name} onChange={onChange}/>
   </div>
 });
 
