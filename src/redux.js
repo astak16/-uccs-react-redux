@@ -21,7 +21,7 @@ export const store = {
   }
 }
 
-export const reducer = (state, {type, payload}) => {
+const reducer = (state, {type, payload}) => {
   console.log(payload)
   if (type === "updateUser") {
     return {
@@ -35,11 +35,12 @@ export const reducer = (state, {type, payload}) => {
     return state
   }
 }
-export const connect = (Component) => {
+export const connect = (selector) => (Component) => {
   return (props) => {
     const {state, setState} = useContext(appContext)
     // 这个 update 只能实现一个组件的 render
     const [, update] = useState({})
+    const data = selector ? selector(state) : {state}
     useEffect(() => {
       store.subscribe(() => {
         update()
@@ -50,6 +51,6 @@ export const connect = (Component) => {
       setState(reducer(state, action))
       // update({})
     }
-    return <Component dispatch={dispatch} state={state} {...props}/>
+    return <Component dispatch={dispatch} {...data} {...props}/>
   }
 }
